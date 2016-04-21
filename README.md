@@ -21,7 +21,7 @@ $ watch *.js npm run build
 $ make install
 ~~~
 
-*Compiling with Swift version `3.0-dev`*
+*Compiling with [Swift version `3.0-dev`](https://swift.org/download/#snapshots)*
 
 ### Why
 

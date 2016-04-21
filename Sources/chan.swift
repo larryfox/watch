@@ -19,7 +19,7 @@ class Chan<T>: Sequence {
     private let buffer: dispatch_semaphore_t
     private let pressure: dispatch_semaphore_t
 
-    private func send(value: T) {
+    private func send(_ value: T) {
         // Block until there’s room in the buffer
         dispatch_semaphore_wait(pressure, DISPATCH_TIME_FOREVER)
 

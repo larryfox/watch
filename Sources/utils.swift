@@ -1,6 +1,6 @@
 import Foundation
 
-func exec(cmd: [String]) -> Int32 {
+func exec(_ cmd: [String]) -> Int32 {
     let task = NSTask()
     task.launchPath = "/usr/bin/env"
     task.arguments = cmd

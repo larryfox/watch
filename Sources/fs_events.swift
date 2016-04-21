@@ -58,11 +58,11 @@ class FSEvents: Sequence {
 
     private let streamCallback: FSEventStreamCallback = { (
                 stream: ConstFSEventStreamRef,
-                context: UnsafeMutablePointer,
+                context: UnsafeMutablePointer?,
                 eventCount: Int,
                 eventPaths: UnsafeMutablePointer,
-                eventFlags: UnsafePointer<FSEventStreamEventFlags>,
-                eventIDs: UnsafePointer<FSEventStreamEventId>
+                eventFlags: UnsafePointer<FSEventStreamEventFlags>!,
+                eventIDs: UnsafePointer<FSEventStreamEventId>!
             ) in
 
         guard let paths = unsafeBitCast(eventPaths, to: NSArray.self) as? [String]
