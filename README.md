@@ -15,10 +15,10 @@ $ watch . make
 $ watch *.js npm run build
 ~~~
 
-### Building
+### Installing
 
 ~~~ bash
-$ swift build
+$ make install
 ~~~
 
 *Compiling with Swift version `3.0-dev`*
