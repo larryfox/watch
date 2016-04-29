@@ -6,6 +6,6 @@ func go(_ routine: () -> ()) {
         routine)
 }
 
-func go(@autoclosure(escaping) _ routine: () -> ()) {
+func go(_ routine: @autoclosure(escaping) () -> ()) {
     go(routine as () -> ())
 }

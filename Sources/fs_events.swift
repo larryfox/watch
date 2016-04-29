@@ -1,14 +1,14 @@
 import Foundation
 
 struct FSEvent {
-    let paths: [String]
-    let flags: [FSFlag]
-    let ids: [UInt64]
+    let path: String
+    let flags: FSEventFlag
+    let id: UInt64
 }
 
-class FSEvents: Sequence {
+class FSEventStream: Sequence {
     let paths: [String]
-    let events = Chan<FSEvent>()
+    let events = Chan<[FSEvent]>()
     private var stream: FSEventStreamRef!
 
     init(paths: [String]) {
@@ -25,7 +25,7 @@ class FSEvents: Sequence {
         self.stream = nil
     }
 
-    func makeIterator() -> AnyIterator<FSEvent> {
+    func makeIterator() -> AnyIterator<[FSEvent]> {
         return events.makeIterator()
     }
 
@@ -35,13 +35,13 @@ class FSEvents: Sequence {
             info: UnsafeMutablePointer(unsafeAddress(of: self)),
             retain: nil,
             release: nil,
-            copyDescription: nil
-        )
+            copyDescription: nil)
 
-        let flags = UInt32(kFSEventStreamCreateFlagUseCFTypes |
-            kFSEventStreamCreateFlagFileEvents |
-            kFSEventStreamCreateFlagIgnoreSelf |
-            kFSEventStreamCreateFlagNoDefer)
+        let flags = FSWatchFlag.UseCFTypes
+            .union(FSWatchFlag.FileEvents)
+            .union(FSWatchFlag.IgnoreSelf)
+            .union(FSWatchFlag.NoDefer)
+            .rawValue
 
         self.stream = FSEventStreamCreate(kCFAllocatorDefault,
             streamCallback,
@@ -68,15 +68,16 @@ class FSEvents: Sequence {
         guard let paths = unsafeBitCast(eventPaths, to: NSArray.self) as? [String]
             else { return }
 
-        var flags = [FSFlag]()
-        var ids = [UInt64]()
+        var events = [FSEvent]()
+
         for index in 0..<eventCount {
-            flags.append(FSFlag(rawValue: eventFlags[index]))
-            ids.append(eventIDs[index])
+            let flag = FSEventFlag(rawValue: eventFlags[index])
+            let event = FSEvent(path: paths[index], flags: flag, id: eventIDs[index])
+            events.append(event)
         }
 
-        let `self` = unsafeBitCast(context, to: FSEvents.self)
-        self.events <- FSEvent(paths: paths, flags: flags, ids: ids)
+        let `self` = unsafeBitCast(context, to: FSEventStream.self)
+        self.events <- events
     }
 }
 
