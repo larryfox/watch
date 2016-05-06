@@ -10,6 +10,6 @@ func exec(_ cmd: [String]) -> Int32 {
 }
 
 func cwd() -> String {
-    let filemgr = NSFileManager.defaultManager()
+    let filemgr = NSFileManager.default()
     return filemgr.currentDirectoryPath
 }
