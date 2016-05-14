@@ -7,7 +7,7 @@ class FSEventStream: Sequence {
 
     init(paths: [String]) {
         self.paths = paths
-        go(self.watch())
+        async(self.watch())
     }
 
     deinit {

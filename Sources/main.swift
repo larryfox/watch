@@ -33,6 +33,6 @@ for events in stream {
     }
 
     if hasCmd {
-        go { exec(cmd) }
+        async { exec(cmd) }
     }
 }
