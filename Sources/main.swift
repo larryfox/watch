@@ -4,11 +4,11 @@ signal(SIGINT) { exit($0) }
 
 let ARGV = Process.arguments
 
-var separator = ":"
+var singleline = true
 var offset = 1
 
 if ARGV.count > offset && ARGV[1] == "-n" {
-    separator = "\n"
+    singleline = false
     offset = 2
 }
 
@@ -24,12 +24,13 @@ let dir = cwd()
 let stream = FSEventStream(paths: [path])
 
 for events in stream {
-    let paths = events
-        .map { $0.path.removePrefix("\(dir)/") }
-        .joined(separator: separator)
+    let paths = events.map { $0.path.removePrefix("\(dir)/") }
 
-    fputs("\(paths)\n", stdout)
-    fflush(stdout)
+    if singleline {
+        println("\(paths.joined(separator: ":"))")
+    } else {
+        paths.forEach { println($0) }
+    }
 
     if hasCmd {
         go { exec(cmd) }

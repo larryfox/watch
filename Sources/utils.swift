@@ -13,3 +13,8 @@ func cwd() -> String {
     let filemgr = NSFileManager.default()
     return filemgr.currentDirectoryPath
 }
+
+func println(_ str: String) {
+    fputs("\(str)\n", stdout)
+    fflush(stdout)
+}

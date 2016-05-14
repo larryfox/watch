@@ -24,12 +24,12 @@ class Chan<T>: Sequence {
         dispatch_semaphore_wait(pressure, DISPATCH_TIME_FOREVER)
 
         // Wait for the lock
-        dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER)
+        dispatch_semaphore_wait(lock!, DISPATCH_TIME_FOREVER)
         values.append(value)
-        dispatch_semaphore_signal(lock)
+        dispatch_semaphore_signal(lock!)
 
         // Let any waiting recievers know we’ve sent
-        dispatch_semaphore_signal(sent)
+        dispatch_semaphore_signal(sent!)
 
         // Block if we just filled the buffer
         dispatch_semaphore_wait(buffer, DISPATCH_TIME_FOREVER)
@@ -37,12 +37,12 @@ class Chan<T>: Sequence {
 
     private func receive() -> T? {
         // Block until a value has been sent
-        dispatch_semaphore_wait(sent, DISPATCH_TIME_FOREVER)
+        dispatch_semaphore_wait(sent!, DISPATCH_TIME_FOREVER)
 
         // Wait for the lock
-        dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER)
+        dispatch_semaphore_wait(lock!, DISPATCH_TIME_FOREVER)
         let value = values.removeFirst()
-        dispatch_semaphore_signal(lock)
+        dispatch_semaphore_signal(lock!)
 
         // Let any waiting senders know we’ve taken a value
         dispatch_semaphore_signal(pressure)

@@ -40,7 +40,7 @@ class FSEventStream: Sequence {
         self.stream = FSEventStreamCreate(kCFAllocatorDefault,
             streamCallback,
             &context,
-            paths,
+            paths as CFArray,
             FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
             2.0,
             flags)
@@ -55,8 +55,8 @@ class FSEventStream: Sequence {
                 context: UnsafeMutablePointer?,
                 eventCount: Int,
                 eventPaths: UnsafeMutablePointer,
-                eventFlags: UnsafePointer<FSEventStreamEventFlags>!,
-                eventIDs: UnsafePointer<FSEventStreamEventId>!
+                eventFlags: UnsafePointer<FSEventStreamEventFlags>?,
+                eventIDs: UnsafePointer<FSEventStreamEventId>?
             ) in
 
         guard let paths = unsafeBitCast(eventPaths, to: NSArray.self) as? [String]
@@ -65,8 +65,8 @@ class FSEventStream: Sequence {
         var events = [FSEvent]()
 
         for index in 0..<eventCount {
-            let flag = FSEventFlag(rawValue: eventFlags[index])
-            let event = FSEvent(path: paths[index], flags: flag, id: eventIDs[index])
+            let flag = FSEventFlag(rawValue: eventFlags![index])
+            let event = FSEvent(path: paths[index], flags: flag, id: eventIDs![index])
             events.append(event)
         }
 
