@@ -17,8 +17,8 @@ When multiple changes happen quickly changes are buffered and grouped into one e
 
 ~~~ bash
 $ watch Source/ make
-$ watch *.js npm run build 
-$ watch -n *.md | xargs -I '%' cat %
+$ watch js/ npm run build
+$ watch -n js/ | xargs -I '%' cat %
 ~~~
 
 ### Installing
@@ -27,9 +27,9 @@ $ watch -n *.md | xargs -I '%' cat %
 $ make install
 ~~~
 
-*Compiling with [Swift version `3.0-dev` (May 9, 2016)](https://swift.org/download/#snapshots)*
+*Compiling with [Swift version `3.0-dev` (May 31, 2016)](https://swift.org/download/#snapshots)*
 
 ### Why
 
-Most watch utilites either poll on an interval or require complicated configuration. 
+Most watch utilites either poll on an interval or require complicated configuration.
 This uses [FSEvents](https://en.wikipedia.org/wiki/FSEvents) and has a simple api.
