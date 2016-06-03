@@ -1,5 +1,6 @@
 import Foundation
 
+@discardableResult
 func exec(_ cmd: [String]) -> Int32 {
     let task = NSTask()
     task.launchPath = "/usr/bin/env"
