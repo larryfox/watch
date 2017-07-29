@@ -24,9 +24,11 @@ class FSEventStream: Sequence {
     }
 
     private func watch() {
+        let info = Unmanaged.passUnretained(self).toOpaque()
+
         var context = FSEventStreamContext(
             version: 0,
-            info: UnsafeMutablePointer(unsafeAddress(of: self)),
+            info: UnsafeMutableRawPointer(info),
             retain: nil,
             release: nil,
             copyDescription: nil)
@@ -45,18 +47,18 @@ class FSEventStream: Sequence {
             2.0,
             flags)
 
-        let queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        let queue = DispatchQueue.global()
         FSEventStreamSetDispatchQueue(stream, queue)
         FSEventStreamStart(stream)
     }
 
     private let streamCallback: FSEventStreamCallback = { (
-                stream: ConstFSEventStreamRef,
-                context: UnsafeMutablePointer?,
+                stream: OpaquePointer,
+                context: Optional<UnsafeMutableRawPointer>,
                 eventCount: Int,
-                eventPaths: UnsafeMutablePointer,
-                eventFlags: UnsafePointer<FSEventStreamEventFlags>?,
-                eventIDs: UnsafePointer<FSEventStreamEventId>?
+                eventPaths: UnsafeMutableRawPointer,
+                eventFlags: Optional<UnsafePointer<UInt32>>,
+                eventIDs: Optional<UnsafePointer<UInt64>>
             ) in
 
         guard let paths = unsafeBitCast(eventPaths, to: NSArray.self) as? [String]

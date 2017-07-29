@@ -9,44 +9,44 @@ class Chan<T>: Sequence {
     init(buffer: Int = 0) {
         guard buffer >= 0 else { fatalError("invalid buffer argument") }
 
-        self.pressure = dispatch_semaphore_create(buffer + 1)
-        self.buffer = dispatch_semaphore_create(buffer)
+        self.pressure = DispatchSemaphore.init(value: buffer + 1)
+        self.buffer = DispatchSemaphore.init(value: buffer)
     }
 
     private var values = Array<T>()
-    private let sent = dispatch_semaphore_create(0)
-    private let lock = dispatch_semaphore_create(1)
-    private let buffer: dispatch_semaphore_t
-    private let pressure: dispatch_semaphore_t
+    private let sent = DispatchSemaphore.init(value: 0)
+    private let lock = DispatchSemaphore.init(value: 1)
+    private let buffer: DispatchSemaphore
+    private let pressure: DispatchSemaphore
 
-    private func send(_ value: T) {
+    func send(_ value: T) {
         // Block until there’s room in the buffer
-        dispatch_semaphore_wait(pressure, DISPATCH_TIME_FOREVER)
+        pressure.wait()
 
         // Wait for the lock
-        dispatch_semaphore_wait(lock!, DISPATCH_TIME_FOREVER)
+        lock.wait()
         values.append(value)
-        dispatch_semaphore_signal(lock!)
+        lock.signal()
 
         // Let any waiting recievers know we’ve sent
-        dispatch_semaphore_signal(sent!)
+        sent.signal()
 
         // Block if we just filled the buffer
-        dispatch_semaphore_wait(buffer, DISPATCH_TIME_FOREVER)
+        buffer.wait()
     }
 
-    private func receive() -> T? {
+    func receive() -> T? {
         // Block until a value has been sent
-        dispatch_semaphore_wait(sent!, DISPATCH_TIME_FOREVER)
+        sent.wait()
 
         // Wait for the lock
-        dispatch_semaphore_wait(lock!, DISPATCH_TIME_FOREVER)
+        lock.wait()
         let value = values.removeFirst()
-        dispatch_semaphore_signal(lock!)
+        lock.signal()
 
         // Let any waiting senders know we’ve taken a value
-        dispatch_semaphore_signal(pressure)
-        dispatch_semaphore_signal(buffer)
+        pressure.signal()
+        buffer.signal()
 
         return value
     }
@@ -57,14 +57,18 @@ class Chan<T>: Sequence {
     }
 }
 
+precedencegroup ChanPrecedence {
+    associativity: left
+}
+
 // Send to channel
-infix operator <- { associativity left }
+infix operator <- : ChanPrecedence
 func <-<T> (c: Chan<T>, value: T) { c.send(value) }
 
 // Recieve from channel
-prefix operator <- {}
+prefix operator <-
 prefix func <-<T> (c: Chan<T>) -> T! { return c.receive() }
 
 // Recieve optional from channel
-prefix operator <~ {}
+prefix operator <~
 prefix func <~<T> (c: Chan<T>) -> T? { return c.receive() }

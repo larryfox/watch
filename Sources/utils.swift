@@ -2,17 +2,17 @@ import Foundation
 
 @discardableResult
 func exec(_ cmd: [String]) -> Int32 {
-    let task = NSTask()
-    task.launchPath = "/usr/bin/env"
-    task.arguments = cmd
-    task.launch()
-    task.waitUntilExit()
-    return task.terminationStatus
+    let process = Process()
+    process.launchPath = "/usr/bin/env"
+    process.arguments = cmd
+    process.launch()
+    process.waitUntilExit()
+    return process.terminationStatus
 }
 
 func cwd() -> String {
-    let filemgr = NSFileManager.default()
-    return filemgr.currentDirectoryPath
+    let fm = FileManager()
+    return fm.currentDirectoryPath
 }
 
 func println(_ str: String) {

@@ -2,7 +2,7 @@ import Foundation
 
 signal(SIGINT) { exit($0) }
 
-let ARGV = Process.arguments
+let ARGV = CommandLine.arguments
 
 var singleline = true
 var offset = 1

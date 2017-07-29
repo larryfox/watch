@@ -1,11 +1,11 @@
 import Foundation
 
-func async(_ routine: () -> ()) {
-    dispatch_async(
-        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-        routine)
+let globalQueue = DispatchQueue.global()
+
+func async(_ routine: @escaping () -> ()) {
+    globalQueue.async(execute: routine)
 }
 
-func async(_ routine: @autoclosure(escaping) () -> ()) {
+func async(_ routine: @autoclosure @escaping () -> ()) {
     async(routine as () -> ())
 }
