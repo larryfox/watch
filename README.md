@@ -27,7 +27,7 @@ $ watch -n js/ | xargs -I '%' cat %
 $ make install
 ~~~
 
-*Compiling with [Swift version `3.0-dev` (May 31, 2016)](https://swift.org/download/#snapshots)*
+*Compiling with [Swift `3.1`](https://swift.org/download)*
 
 ### Why
 
